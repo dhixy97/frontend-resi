@@ -19,10 +19,19 @@ interface Cabang {
   noTelp: string;
 }
 
+interface Wilayah {
+  provinsi: string;
+  kota: string;
+  kecamatan: string;
+  kelurahan: string;
+  kodepos: string;
+}
+
 interface ResiData {
   resi: string;
   nama: string;
   alamat: string;
+  wilayah: Wilayah;
   jumlah: number;
   berat: number;
   namaBarang: string;
@@ -72,6 +81,12 @@ export default function ResiClient() {
     fetchResi();
   }, [nomorResi]);
 
+  const formatAlamatLengkap = (): string => {
+    if (!dataResi) return "-";
+    const { alamat, wilayah } = dataResi;
+    return `${alamat}, ${wilayah.provinsi}, ${wilayah.kota}, ${wilayah.kecamatan}, ${wilayah.kelurahan}, ${wilayah.kodepos}`;
+  };
+
   return (
     <>
       <div className="w-full pt-10 bg-blue-900 min-h-screen pb-10">
@@ -101,7 +116,7 @@ export default function ResiClient() {
                     pengirim={dataResi.cabang?.nama ?? "-"}
                     alamatPengirim={dataResi.cabang?.alamat ?? "-"}
                     penerima={dataResi.nama}
-                    alamatPenerima={dataResi.alamat}
+                    alamatPenerima={formatAlamatLengkap()}
                     jumlahKoli={dataResi.jumlah}
                     beratAsli={`${dataResi.berat} kg`}
                     isiKiriman={dataResi.namaBarang}
@@ -113,21 +128,21 @@ export default function ResiClient() {
                   />
                 </div>
 
-                <div className="mt-10 w-full rounded border shadow overflow-x-auto">
-                  <table className="table-auto min-w-full text-sm text-center border border-gray-300">
+                <div className="mt-10 w-full rounded border shadow">
+                  <table className="table-fixed w-full text-sm text-center border border-gray-300">
                     <thead>
                       <tr className="bg-blue-600 text-white">
-                        <th className="px-2 py-2 border">TANGGAL</th>
-                        <th className="px-2 py-2 border">KETERANGAN</th>
-                        <th className="px-2 py-2 border">POSISI BARANG</th>
+                        <th className="px-2 py-2 border w-1/3">TANGGAL</th>
+                        <th className="px-2 py-2 border w-1/3">KETERANGAN</th>
+                        <th className="px-2 py-2 border w-1/3">POSISI BARANG</th>
                       </tr>
                     </thead>
                     <tbody>
                       {dataResi.posisiBarang?.map((item, index) => (
                         <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-100"}>
-                          <td className="px-2 py-2 border">{formatTanggal(item.tanggal)}</td>
-                          <td className="px-2 py-2 border">{item.keterangan}</td>
-                          <td className="px-2 py-2 border">{item.status}</td>
+                          <td className="px-2 py-2 border break-words">{formatTanggal(item.tanggal)}</td>
+                          <td className="px-2 py-2 border break-words">{item.keterangan}</td>
+                          <td className="px-2 py-2 border break-words">{item.status}</td>
                         </tr>
                       ))}
                     </tbody>

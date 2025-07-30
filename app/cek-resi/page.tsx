@@ -1,5 +1,10 @@
-import ResiClient from './ResiClient';
+import { Suspense } from "react";
+import ResiClient from "./ResiClient";
 
 export default function CekResiPage() {
-  return <ResiClient />;
+  return (
+    <Suspense fallback={<div>Memuat halaman...</div>}>
+      <ResiClient />
+    </Suspense>
+  );
 }

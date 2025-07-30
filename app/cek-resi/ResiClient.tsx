@@ -113,21 +113,21 @@ export default function ResiClient() {
                   />
                 </div>
 
-                <div className="overflow-x-auto mt-10">
-                  <table className="min-w-full border border-gray-300">
+                <div className="mt-10 w-full rounded border shadow overflow-x-auto">
+                  <table className="table-auto min-w-full text-sm text-center border border-gray-300">
                     <thead>
                       <tr className="bg-blue-600 text-white">
-                        <th className="px-4 py-2 text-left">TANGGAL</th>
-                        <th className="px-4 py-2 text-left">KETERANGAN</th>
-                        <th className="px-4 py-2 text-left">POSISI BARANG</th>
+                        <th className="px-2 py-2 border">TANGGAL</th>
+                        <th className="px-2 py-2 border">KETERANGAN</th>
+                        <th className="px-2 py-2 border">POSISI BARANG</th>
                       </tr>
                     </thead>
                     <tbody>
                       {dataResi.posisiBarang?.map((item, index) => (
                         <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-100"}>
-                          <td className="px-4 py-2 border">{formatTanggal(item.tanggal)}</td>
-                          <td className="px-4 py-2 border">{item.keterangan}</td>
-                          <td className="px-4 py-2 border">{item.status}</td>
+                          <td className="px-2 py-2 border">{formatTanggal(item.tanggal)}</td>
+                          <td className="px-2 py-2 border">{item.keterangan}</td>
+                          <td className="px-2 py-2 border">{item.status}</td>
                         </tr>
                       ))}
                     </tbody>

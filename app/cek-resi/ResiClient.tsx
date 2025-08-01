@@ -155,7 +155,7 @@ export default function ResiClient() {
                         <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-100"}>
                           <td className="px-2 py-2 border break-words">{formatTanggal(item.tanggal)}</td>
                           <td className="px-2 py-2 border break-words">{item.keterangan}</td>
-                          <td className="px-2 py-2 border break-words">{formatStatus(dataResi.posisiBarang[dataResi.posisiBarang.length - 1].status)}</td>
+                          <td className="px-2 py-2 border break-words">{formatStatus(item.status)}</td>
                         </tr>
                       ))}
                     </tbody>

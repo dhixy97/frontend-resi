@@ -90,7 +90,7 @@ export default function ResiClient() {
   const formatStatus = (status : string) => {
   switch (status) {
     case 'Pending':
-      return 'Menunggu';
+      return 'Pending';
     case 'Proses':
       return 'Sedang Diproses';
     case 'Diterima':

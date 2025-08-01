@@ -87,6 +87,19 @@ export default function ResiClient() {
     return `${alamat}, ${wilayah.provinsi}, ${wilayah.kota}, ${wilayah.kecamatan}, ${wilayah.kelurahan}, ${wilayah.kodepos}`;
   };
 
+  const formatStatus = (status : string) => {
+  switch (status) {
+    case 'Pending':
+      return 'Menunggu';
+    case 'Proses':
+      return 'Sedang Diproses';
+    case 'Diterima':
+      return 'Barang Diterima';
+    default:
+      return status;
+  }
+};
+
   return (
     <>
       <div className="w-full pt-10 bg-blue-900 min-h-screen pb-10">
@@ -142,7 +155,7 @@ export default function ResiClient() {
                         <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-gray-100"}>
                           <td className="px-2 py-2 border break-words">{formatTanggal(item.tanggal)}</td>
                           <td className="px-2 py-2 border break-words">{item.keterangan}</td>
-                          <td className="px-2 py-2 border break-words">{item.status}</td>
+                          <td className="px-2 py-2 border break-words">{formatStatus(item.status)}</td>
                         </tr>
                       ))}
                     </tbody>

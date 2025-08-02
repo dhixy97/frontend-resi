@@ -3,10 +3,8 @@ import dbConnect from '@/lib/dbConnect';
 import Resi from '@/models/Resi';
 import { verifyToken } from '@/lib/auth';
 
-// Helper untuk uppercase dengan aman
 const toUpperSafe = (str?: string): string => (str ? str.toUpperCase() : '');
 
-// Algoritma bikin no resi
 function generateNomorResiAngka(): string {
   const now = new Date();
   const random9Digit = Math.floor(100000000 + Math.random() * 900000000);
@@ -14,12 +12,17 @@ function generateNomorResiAngka(): string {
   return `${random9Digit}-${date}`;
 }
 
-// ===========================
-// GET: Semua Resi
-// ===========================
-export async function GET() {
+// =======================
+// 🔐 Proteksi di GET
+// =======================
+export async function GET(req: NextRequest) {
   try {
     await dbConnect();
+
+    const user = verifyToken(req);
+    if (!user || user.role !== 'admin') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     const semuaResi = await Resi.find().sort({ createdAt: -1 });
     return NextResponse.json(semuaResi, { status: 200 });
@@ -32,9 +35,9 @@ export async function GET() {
   }
 }
 
-// ===========================
-// POST: Tambah Resi
-// ===========================
+// =======================
+// 🔐 Proteksi di POST
+// =======================
 export async function POST(req: NextRequest) {
   try {
     await dbConnect();

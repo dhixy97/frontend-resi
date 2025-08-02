@@ -9,29 +9,20 @@ export async function GET(
   try {
     await dbConnect();
 
-    const rawResi = params.noresi;
-    const cleanedResi = rawResi.trim(); // buang spasi jika ada
-
-    console.log('🔍 PARAM DARI URL:', rawResi);
-    console.log('🧼 DICARI DENGAN:', cleanedResi);
-
-    const resi = await Resi.findOne({ resi: cleanedResi });
+    const resi = await Resi.findOne({ resi: params.noresi });
 
     if (!resi) {
-      console.log('❌ Resi tidak ditemukan di DB.');
-      return NextResponse.json(
-        { message: 'Resi tidak ditemukan' },
-        { status: 404 }
-      );
+      return NextResponse.json({ message: "Resi tidak ditemukan" }, { status: 404 });
     }
-
-    console.log('✅ Resi ditemukan:', resi.resi);
 
     return NextResponse.json(resi, { status: 200 });
   } catch (err) {
-    console.error('❗ GET /api/resi/[noresi] error:', err);
+    console.error('❌ Error GET /api/resi/[noresi]:', err);
     return NextResponse.json(
-      { error: (err as Error).message || 'Gagal mengambil detail resi' },
+      {
+        message: "Gagal mengambil detail resi",
+        error: (err as Error).message,
+      },
       { status: 500 }
     );
   }

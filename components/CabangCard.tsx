@@ -1,5 +1,5 @@
 import { FiPhone } from "react-icons/fi";
-import { Cabang } from "@/data/cabang";
+import { Cabang } from "@/app/data/cabang";
 
 export default function CabangCard({ nama, alamat, telepon }: Cabang) {
   return (

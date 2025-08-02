@@ -1,4 +1,4 @@
-import cabangList from "@/data/cabang";
+import cabangList from "@/app/data/cabang";
 import CabangCard from "./CabangCard";
 
 export default function CabangSection() {

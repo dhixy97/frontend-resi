@@ -25,39 +25,29 @@ export default function CekTarif() {
 
   const [kodePos, setKodePos] = useState("");
 
-  // Ambil provinsi awal
   useEffect(() => {
     getProvinces().then(setProvinsi).catch(console.error);
   }, []);
 
-  // Saat Provinsi berubah
   useEffect(() => {
     if (!selectedProvinsi) return;
-
     setSelectedKota("");
     setKota([]);
-
     setSelectedKecamatan("");
     setKecamatan([]);
-
     setSelectedKelurahan("");
     setKelurahan([]);
-
     setKodePos("");
 
     getCities(selectedProvinsi).then(setKota).catch(console.error);
   }, [selectedProvinsi]);
 
-  // Saat Kota berubah
   useEffect(() => {
-    if (!selectedKota) return;
-
+    if (!selectedKota || !selectedProvinsi) return;
     setSelectedKecamatan("");
     setKecamatan([]);
-
     setSelectedKelurahan("");
     setKelurahan([]);
-
     setKodePos("");
 
     getDistricts(selectedProvinsi, selectedKota)
@@ -65,13 +55,10 @@ export default function CekTarif() {
       .catch(console.error);
   }, [selectedKota, selectedProvinsi]);
 
-  // Saat Kecamatan berubah
   useEffect(() => {
-    if (!selectedKecamatan) return;
-
+    if (!selectedKecamatan || !selectedKota || !selectedProvinsi) return;
     setSelectedKelurahan("");
     setKelurahan([]);
-
     setKodePos("");
 
     getVillages(selectedProvinsi, selectedKota, selectedKecamatan)
@@ -86,7 +73,7 @@ export default function CekTarif() {
       selectedKota &&
       selectedKecamatan &&
       selectedKelurahan &&
-      kelurahan.find((k) => k.name === selectedKelurahan);
+      kelurahan.find((v) => v.name === selectedKelurahan);
 
     if (!isValid) return;
 
@@ -100,11 +87,17 @@ export default function CekTarif() {
     )
       .then((res) => {
         if (canceled) return;
-        setKodePos(typeof res === "string" ? res : res.kodepos || "");
+        if (typeof res === "object" && res.postalCode) {
+          setKodePos(res.postalCode);
+        } else if (typeof res === "string") {
+          setKodePos(res);
+        } else {
+          setKodePos("");
+        }
       })
       .catch((err) => {
         if (!canceled) {
-          console.warn("Gagal ambil kode pos:", err);
+          console.error("Gagal ambil kode pos:", err);
           setKodePos("");
         }
       });
@@ -157,11 +150,10 @@ export default function CekTarif() {
       <div className="mb-4">
         <label className="block font-semibold mb-2">TUJUAN KIRIM:</label>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
-          {/* Provinsi */}
           <select
             value={selectedProvinsi}
             onChange={(e) => setSelectedProvinsi(e.target.value)}
-            className="border border-gray-300 px-3 py-2 rounded appearance-none"
+            className="border border-gray-300 px-3 py-2 rounded"
           >
             <option value="">Provinsi</option>
             {provinsi.map((prov) => (
@@ -171,12 +163,11 @@ export default function CekTarif() {
             ))}
           </select>
 
-          {/* Kota */}
           <select
             value={selectedKota}
             onChange={(e) => setSelectedKota(e.target.value)}
             disabled={!kota.length}
-            className="border border-gray-300 px-3 py-2 rounded appearance-none"
+            className="border border-gray-300 px-3 py-2 rounded"
           >
             <option value="">Kota</option>
             {kota.map((k) => (
@@ -186,12 +177,11 @@ export default function CekTarif() {
             ))}
           </select>
 
-          {/* Kecamatan */}
           <select
             value={selectedKecamatan}
             onChange={(e) => setSelectedKecamatan(e.target.value)}
             disabled={!kecamatan.length}
-            className="border border-gray-300 px-3 py-2 rounded appearance-none"
+            className="border border-gray-300 px-3 py-2 rounded"
           >
             <option value="">Kecamatan</option>
             {kecamatan.map((d) => (
@@ -201,12 +191,11 @@ export default function CekTarif() {
             ))}
           </select>
 
-          {/* Kelurahan */}
           <select
             value={selectedKelurahan}
             onChange={(e) => setSelectedKelurahan(e.target.value)}
             disabled={!kelurahan.length}
-            className="border border-gray-300 px-3 py-2 rounded appearance-none"
+            className="border border-gray-300 px-3 py-2 rounded"
           >
             <option value="">Kelurahan</option>
             {kelurahan.map((v) => (
@@ -216,18 +205,16 @@ export default function CekTarif() {
             ))}
           </select>
 
-          {/* Kode Pos */}
           <input
             type="text"
             placeholder="Kode Pos"
-            className="border border-gray-300 px-3 py-2 rounded appearance-none"
+            className="border border-gray-300 px-3 py-2 rounded"
             value={kodePos}
             readOnly
           />
         </div>
       </div>
 
-      {/* Tombol */}
       <div className="flex flex-col md:flex-row justify-center gap-4 mt-6">
         <button className="px-6 py-2 bg-red-700 hover:bg-red-600 text-white rounded">
           CEK TARIF

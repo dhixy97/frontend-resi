@@ -25,7 +25,7 @@ export default function CekTarif() {
 
   const [kodePos, setKodePos] = useState("");
 
-  // Ambil semua provinsi
+  // Ambil provinsi awal
   useEffect(() => {
     getProvinces().then(setProvinsi).catch(console.error);
   }, []);
@@ -36,10 +36,13 @@ export default function CekTarif() {
 
     setSelectedKota("");
     setKota([]);
+
     setSelectedKecamatan("");
     setKecamatan([]);
+
     setSelectedKelurahan("");
     setKelurahan([]);
+
     setKodePos("");
 
     getCities(selectedProvinsi).then(setKota).catch(console.error);
@@ -47,12 +50,14 @@ export default function CekTarif() {
 
   // Saat Kota berubah
   useEffect(() => {
-    if (!selectedKota || !selectedProvinsi) return;
+    if (!selectedKota) return;
 
     setSelectedKecamatan("");
     setKecamatan([]);
+
     setSelectedKelurahan("");
     setKelurahan([]);
+
     setKodePos("");
 
     getDistricts(selectedProvinsi, selectedKota)
@@ -62,10 +67,11 @@ export default function CekTarif() {
 
   // Saat Kecamatan berubah
   useEffect(() => {
-    if (!selectedKecamatan || !selectedKota || !selectedProvinsi) return;
+    if (!selectedKecamatan) return;
 
     setSelectedKelurahan("");
     setKelurahan([]);
+
     setKodePos("");
 
     getVillages(selectedProvinsi, selectedKota, selectedKecamatan)
@@ -75,10 +81,14 @@ export default function CekTarif() {
 
   // Ambil kode pos saat kelurahan dipilih
   useEffect(() => {
-    const isAllSelected =
-      selectedProvinsi && selectedKota && selectedKecamatan && selectedKelurahan;
+    const isValid =
+      selectedProvinsi &&
+      selectedKota &&
+      selectedKecamatan &&
+      selectedKelurahan &&
+      kelurahan.find((k) => k.name === selectedKelurahan);
 
-    if (!isAllSelected) return;
+    if (!isValid) return;
 
     let canceled = false;
 
@@ -88,20 +98,13 @@ export default function CekTarif() {
       selectedKecamatan,
       selectedKelurahan
     )
-      .then((res: { postalCode?: string } | string) => {
+      .then((res) => {
         if (canceled) return;
-
-        if (typeof res === "object" && res?.postalCode) {
-          setKodePos(res.postalCode);
-        } else if (typeof res === "string") {
-          setKodePos(res);
-        } else {
-          setKodePos("");
-        }
+        setKodePos(typeof res === "string" ? res : res.kodepos || "");
       })
       .catch((err) => {
         if (!canceled) {
-          console.error("Gagal ambil kode pos:", err);
+          console.warn("Gagal ambil kode pos:", err);
           setKodePos("");
         }
       });
@@ -114,6 +117,7 @@ export default function CekTarif() {
     selectedKota,
     selectedKecamatan,
     selectedKelurahan,
+    kelurahan,
   ]);
 
   const resetForm = () => {

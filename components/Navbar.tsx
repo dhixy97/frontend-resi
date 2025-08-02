@@ -53,7 +53,7 @@ export default function Navbar() {
         {navItems.map((item) => (
           <li key={item.id}>
             <a
-              href={`#${item.id}`}
+              href={`/${item.id}`}
               className={`text-sm font-medium px-4 py-2 rounded transition-all duration-300 ${
                 activeSection === item.id
                   ? 'bg-red-700 text-white'

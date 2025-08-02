@@ -4,6 +4,11 @@ import { NextResponse } from 'next/server';
 export async function GET(_, { params }) {
   const { provinceCode, cityName, districtName, villageName } = params;
   const province = wilayah[provinceCode];
+  const apiKey = request.headers.get('x-api-key');
+  const validApiKey = process.env.NEXT_PUBLIC_API_KEY;
+  if (apiKey !== validApiKey) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
   if (!province) {
     return NextResponse.json({ message: 'Provinsi tidak ditemukan' }, { status: 404 });
   }

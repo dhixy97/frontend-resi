@@ -68,7 +68,7 @@ export default function ResiClient() {
 
     const fetchResi = async () => {
       try {
-        const res = await axios.get<ResiData>(`${apiUrl}/api/resi/${nomorResi}`);
+        const res = await axios.get<ResiData>(`/api/resi/${nomorResi}`);
         setDataResi(res.data);
       } catch (err) {
         console.error(err);

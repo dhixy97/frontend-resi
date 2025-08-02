@@ -3,20 +3,20 @@ import axios, { AxiosError } from "axios";
 const API = process.env.NEXT_PUBLIC_API_URL
 
 export async function getProvinces() {
-  const res = await axios.get(`${API}/api/wilayah/provinces`);
+  const res = await axios.get(`/api/wilayah/provinces`);
   return res.data;
 }
 
 export async function getCities(provinceCode: string) {
   const res = await axios.get(
-    `${API}/api/wilayah/cities/${encodeURIComponent(provinceCode)}`
+    `api/wilayah/cities/${encodeURIComponent(provinceCode)}`
   );
   return res.data;
 }
 
 export async function getDistricts(provinceCode: string, cityName: string) {
   const res = await axios.get(
-    `${API}/api/wilayah/districts/${encodeURIComponent(provinceCode)}/${encodeURIComponent(cityName)}`
+    `/api/wilayah/districts/${encodeURIComponent(provinceCode)}/${encodeURIComponent(cityName)}`
   );
   return res.data;
 }
@@ -27,7 +27,7 @@ export async function getVillages(
   districtName: string
 ) {
   const res = await axios.get(
-    `${API}/villages/${encodeURIComponent(provinceCode)}/${encodeURIComponent(cityName)}/${encodeURIComponent(districtName)}`
+    `/api/wilayah/villages/${encodeURIComponent(provinceCode)}/${encodeURIComponent(cityName)}/${encodeURIComponent(districtName)}`
   );
   return res.data;
 }
@@ -40,7 +40,7 @@ export async function getPostalCode(
 ) {
   try {
     const res = await axios.get(
-      `${API}/api/wilayah/postal-code/${provinceCode}/${encodeURIComponent(cityName)}/${encodeURIComponent(districtName)}/${encodeURIComponent(villageName)}`
+      `/api/wilayah/postal-code/${provinceCode}/${encodeURIComponent(cityName)}/${encodeURIComponent(districtName)}/${encodeURIComponent(villageName)}`
     );
     return res.data.kodepos || "";
   } catch (err) {

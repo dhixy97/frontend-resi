@@ -56,11 +56,11 @@ export async function getPostalCode(
   cityName: string,
   districtName: string,
   villageName: string
-): Promise<{ postalCode: string }> {
+): Promise<string> {
   const res = await fetch(
     `/api/wilayah-proxy/postal-code/${encodeURIComponent(provinceCode)}/${encodeURIComponent(cityName)}/${encodeURIComponent(districtName)}/${encodeURIComponent(villageName)}`
   );
   if (!res.ok) throw new Error('Gagal mengambil kode pos');
-  return res.json();
+  const json = await res.json();
+  return json.kodepos;
 }
-

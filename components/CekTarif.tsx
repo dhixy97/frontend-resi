@@ -1,6 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
-import { getProvinces, getCities, getDistricts, getVillages, getPostalCode, Province, Village } from "@/lib/apiWilayah";
+import {
+  getProvinces,
+  getCities,
+  getDistricts,
+  getVillages,
+  getPostalCode,
+  Province,
+  Village,
+} from "@/lib/apiWilayah";
 
 export default function CekTarif() {
   const [provinsi, setProvinsi] = useState<Province[]>([]);
@@ -17,12 +25,16 @@ export default function CekTarif() {
 
   const [kodePos, setKodePos] = useState("");
 
+  // Ambil semua provinsi
   useEffect(() => {
     getProvinces().then(setProvinsi).catch(console.error);
   }, []);
 
+  // Saat Provinsi berubah
   useEffect(() => {
     if (!selectedProvinsi) return;
+
+    // Reset level bawah
     setSelectedKota("");
     setKota([]);
     setSelectedKecamatan("");
@@ -31,42 +43,83 @@ export default function CekTarif() {
     setKelurahan([]);
     setKodePos("");
 
-    getCities(selectedProvinsi).then(setKota).catch(console.error);
+    let canceled = false;
+    getCities(selectedProvinsi)
+      .then((res) => {
+        if (!canceled) setKota(res);
+      })
+      .catch(console.error);
+
+    return () => {
+      canceled = true;
+    };
   }, [selectedProvinsi]);
 
+  // Saat Kota berubah
   useEffect(() => {
-    if (!selectedKota || !selectedProvinsi) return;
+    if (!selectedKota) return;
+
+    // Reset level bawah
     setSelectedKecamatan("");
     setKecamatan([]);
     setSelectedKelurahan("");
     setKelurahan([]);
     setKodePos("");
 
-    getDistricts(selectedProvinsi, selectedKota).then(setKecamatan).catch(console.error);
-  }, [selectedKota, selectedProvinsi]);
+    let canceled = false;
+    getDistricts(selectedProvinsi, selectedKota)
+      .then((res) => {
+        if (!canceled) setKecamatan(res);
+      })
+      .catch(console.error);
 
+    return () => {
+      canceled = true;
+    };
+  }, [selectedKota]);
+
+  // Saat Kecamatan berubah
   useEffect(() => {
-    if (!selectedKecamatan || !selectedKota || !selectedProvinsi) return;
+    if (!selectedKecamatan) return;
+
     setSelectedKelurahan("");
     setKelurahan([]);
     setKodePos("");
 
-    getVillages(selectedProvinsi, selectedKota, selectedKecamatan).then(setKelurahan).catch(console.error);
-  }, [selectedKecamatan, selectedKota, selectedProvinsi]);
+    let canceled = false;
+    getVillages(selectedProvinsi, selectedKota, selectedKecamatan)
+      .then((res) => {
+        if (!canceled) setKelurahan(res);
+      })
+      .catch(console.error);
+
+    return () => {
+      canceled = true;
+    };
+  }, [selectedKecamatan]);
 
   // Ambil kode pos saat kelurahan dipilih
   useEffect(() => {
-    const isValid = selectedProvinsi && selectedKota && selectedKecamatan && selectedKelurahan && kelurahan.find((v) => v.name === selectedKelurahan);
+    const isAllSelected =
+      selectedProvinsi &&
+      selectedKota &&
+      selectedKecamatan &&
+      selectedKelurahan;
 
-    if (!isValid) return;
+    if (!isAllSelected) return;
 
     let canceled = false;
 
-    getPostalCode(selectedProvinsi, selectedKota, selectedKecamatan, selectedKelurahan)
-      .then((res) => {
+    getPostalCode(
+      selectedProvinsi,
+      selectedKota,
+      selectedKecamatan,
+      selectedKelurahan
+    )
+      .then((res: { postalCode?: string } | string) => {
         if (canceled) return;
 
-        if (typeof res === "object" && "postalCode" in res && typeof res.postalCode === "string") {
+        if (typeof res === "object" && res?.postalCode) {
           setKodePos(res.postalCode);
         } else if (typeof res === "string") {
           setKodePos(res);
@@ -84,7 +137,7 @@ export default function CekTarif() {
     return () => {
       canceled = true;
     };
-  }, [selectedProvinsi, selectedKota, selectedKecamatan, selectedKelurahan, kelurahan]);
+  }, [selectedKelurahan]);
 
   const resetForm = () => {
     setSelectedProvinsi("");
@@ -99,26 +152,20 @@ export default function CekTarif() {
 
   return (
     <div className="mt-12 bg-white text-black rounded shadow p-6 max-w-5xl mx-auto">
-      <h3 className="text-2xl font-semibold text-center mb-6">CEK TARIF DAKOTA</h3>
-
-      {/* KIRIM DARI (dummy) */}
-      <div className="mb-4">
-        <label className="block font-semibold mb-1">KIRIM DARI:</label>
-        <select className="w-full border border-gray-300 rounded px-3 py-2 appearance-none" defaultValue="">
-          <option value="">Pilih Provinsi</option>
-          {provinsi.map((prov) => (
-            <option key={prov.code} value={prov.code}>
-              {prov.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <h3 className="text-2xl font-semibold text-center mb-6">
+        CEK TARIF DAKOTA
+      </h3>
 
       {/* TUJUAN KIRIM */}
       <div className="mb-4">
         <label className="block font-semibold mb-2">TUJUAN KIRIM:</label>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
-          <select value={selectedProvinsi} onChange={(e) => setSelectedProvinsi(e.target.value)} className="border border-gray-300 px-3 py-2 rounded">
+          {/* Provinsi */}
+          <select
+            value={selectedProvinsi}
+            onChange={(e) => setSelectedProvinsi(e.target.value)}
+            className="border border-gray-300 px-3 py-2 rounded appearance-none"
+          >
             <option value="">Provinsi</option>
             {provinsi.map((prov) => (
               <option key={prov.code} value={prov.code}>
@@ -127,7 +174,13 @@ export default function CekTarif() {
             ))}
           </select>
 
-          <select value={selectedKota} onChange={(e) => setSelectedKota(e.target.value)} disabled={!kota.length} className="border border-gray-300 px-3 py-2 rounded">
+          {/* Kota */}
+          <select
+            value={selectedKota}
+            onChange={(e) => setSelectedKota(e.target.value)}
+            disabled={!kota.length}
+            className="border border-gray-300 px-3 py-2 rounded appearance-none"
+          >
             <option value="">Kota</option>
             {kota.map((k) => (
               <option key={k} value={k}>
@@ -136,7 +189,13 @@ export default function CekTarif() {
             ))}
           </select>
 
-          <select value={selectedKecamatan} onChange={(e) => setSelectedKecamatan(e.target.value)} disabled={!kecamatan.length} className="border border-gray-300 px-3 py-2 rounded">
+          {/* Kecamatan */}
+          <select
+            value={selectedKecamatan}
+            onChange={(e) => setSelectedKecamatan(e.target.value)}
+            disabled={!kecamatan.length}
+            className="border border-gray-300 px-3 py-2 rounded appearance-none"
+          >
             <option value="">Kecamatan</option>
             {kecamatan.map((d) => (
               <option key={d} value={d}>
@@ -145,7 +204,13 @@ export default function CekTarif() {
             ))}
           </select>
 
-          <select value={selectedKelurahan} onChange={(e) => setSelectedKelurahan(e.target.value)} disabled={!kelurahan.length} className="border border-gray-300 px-3 py-2 rounded">
+          {/* Kelurahan */}
+          <select
+            value={selectedKelurahan}
+            onChange={(e) => setSelectedKelurahan(e.target.value)}
+            disabled={!kelurahan.length}
+            className="border border-gray-300 px-3 py-2 rounded appearance-none"
+          >
             <option value="">Kelurahan</option>
             {kelurahan.map((v) => (
               <option key={v.name} value={v.name}>
@@ -154,13 +219,26 @@ export default function CekTarif() {
             ))}
           </select>
 
-          <input type="text" placeholder="Kode Pos" className="border border-gray-300 px-3 py-2 rounded" value={kodePos} readOnly />
+          {/* Kode Pos */}
+          <input
+            type="text"
+            placeholder="Kode Pos"
+            className="border border-gray-300 px-3 py-2 rounded appearance-none"
+            value={kodePos}
+            readOnly
+          />
         </div>
       </div>
 
+      {/* Tombol */}
       <div className="flex flex-col md:flex-row justify-center gap-4 mt-6">
-        <button className="px-6 py-2 bg-red-700 hover:bg-red-600 text-white rounded">CEK TARIF</button>
-        <button className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded" onClick={resetForm}>
+        <button className="px-6 py-2 bg-red-700 hover:bg-red-600 text-white rounded">
+          CEK TARIF
+        </button>
+        <button
+          className="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-black rounded"
+          onClick={resetForm}
+        >
           RESET TARIF
         </button>
       </div>

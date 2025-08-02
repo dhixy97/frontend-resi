@@ -1,32 +1,36 @@
-import wilayah from '@/data/nestedWilayah.json';
 import { NextResponse } from 'next/server';
+import nestedWilayah from '@/data/nestedWilayah.json';
+import { verifyApiKey } from '@/lib/verifyApiKey';
 
-export async function GET(_, { params }) {
-  const { provinceCode, cityName, districtName, villageName } = params;
-  const province = wilayah[provinceCode];
-  const apiKey = request.headers.get('x-api-key');
-  const validApiKey = process.env.NEXT_PUBLIC_API_KEY;
-  if (apiKey !== validApiKey) {
+export async function GET(req, { params }) {
+  const apiKey = req.headers.get('x-api-key');
+  if (!verifyApiKey(apiKey)) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
-  if (!province) {
-    return NextResponse.json({ message: 'Provinsi tidak ditemukan' }, { status: 404 });
-  }
 
-  const city = province.cities[decodeURIComponent(cityName)];
-  if (!city) {
-    return NextResponse.json({ message: 'Kota tidak ditemukan' }, { status: 404 });
-  }
+  const { provinceCode, cityName, districtName, villageName } = params;
 
-  const district = city[decodeURIComponent(districtName)];
-  if (!district) {
-    return NextResponse.json({ message: 'Kecamatan tidak ditemukan' }, { status: 404 });
-  }
+  const prov = nestedWilayah[provinceCode];
+  if (!prov) return NextResponse.json({ message: 'Provinsi tidak ditemukan' }, { status: 404 });
 
-  const postalCode = district[decodeURIComponent(villageName)];
-  if (!postalCode) {
-    return NextResponse.json({ message: 'Kelurahan tidak ditemukan' }, { status: 404 });
-  }
+  const cityKey = Object.keys(prov.cities).find(
+    k => k.toLowerCase() === decodeURIComponent(cityName).toLowerCase()
+  );
+  if (!cityKey) return NextResponse.json({ message: 'Kota tidak ditemukan' }, { status: 404 });
+  const city = prov.cities[cityKey];
 
-  return NextResponse.json({ kodepos: postalCode });
+  const districtKey = Object.keys(city).find(
+    k => k.toLowerCase() === decodeURIComponent(districtName).toLowerCase()
+  );
+  if (!districtKey) return NextResponse.json({ message: 'Kecamatan tidak ditemukan' }, { status: 404 });
+  const district = city[districtKey];
+
+  const villageKey = Object.keys(district).find(
+    k => k.toLowerCase() === decodeURIComponent(villageName).toLowerCase()
+  );
+  if (!villageKey) return NextResponse.json({ message: 'Kelurahan tidak ditemukan' }, { status: 404 });
+
+  const kodepos = district[villageKey];
+
+  return NextResponse.json({ kodepos });
 }

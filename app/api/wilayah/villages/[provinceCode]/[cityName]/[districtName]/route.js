@@ -1,9 +1,17 @@
-import wilayah from '@/data/nestedWilayah.json';
 import { NextResponse } from 'next/server';
+import nestedWilayah from '@/data/nestedWilayah.json';
+import { verifyApiKey } from '@/lib/verifyApiKey';
 
-export async function GET(_, { params }) {
+export async function GET(req, { params }) {
+  const apiKey = req.headers.get('x-api-key');
+
+  if (!verifyApiKey(apiKey)) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
+
   const { provinceCode, cityName, districtName } = params;
-  const province = wilayah[provinceCode];
+
+  const province = nestedWilayah[provinceCode];
   if (!province) {
     return NextResponse.json({ message: 'Provinsi tidak ditemukan' }, { status: 404 });
   }
@@ -20,7 +28,7 @@ export async function GET(_, { params }) {
 
   const villages = Object.entries(district).map(([name, postal]) => ({
     name,
-    postalCode: postal
+    postalCode: postal,
   }));
 
   return NextResponse.json(villages);

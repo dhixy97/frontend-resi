@@ -1,70 +1,66 @@
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY || '1234567890abcdef';
 
-async function fetchWithApiKey(url: string) {
-  const res = await fetch(url, {
-    headers: {
-      'x-api-key': API_KEY,
-    },
-  });
+export interface Province {
+  code: string;
+  name: string;
+}
 
-  if (!res.ok) {
-    throw new Error(`Gagal fetch ${url}: ${res.status}`);
-  }
+export interface Village {
+  name: string;
+  postalCode: string;
+}
 
+// Get daftar provinsi
+export async function getProvinces(): Promise<Province[]> {
+  const res = await fetch(`/api/wilayah-proxy/provinces`);
+  if (!res.ok) throw new Error('Gagal mengambil data provinsi');
   return res.json();
 }
 
-// ✅ Ambil semua provinsi
-export async function getProvinces() {
-  return fetchWithApiKey('/api/wilayah/provinces');
-}
-
-// ✅ Ambil semua kota berdasarkan kode provinsi
-export async function getCities(provinceCode: string) {
-  return fetchWithApiKey(`/api/wilayah/cities/${encodeURIComponent(provinceCode)}`);
-}
-
-// ✅ Ambil semua kecamatan berdasarkan provinsi dan kota
-export async function getDistricts(provinceCode: string, cityName: string) {
-  return fetchWithApiKey(
-    `/api/wilayah/districts/${encodeURIComponent(provinceCode)}/${encodeURIComponent(cityName)}`
+// Get daftar kota dari kode provinsi
+export async function getCities(provinceCode: string): Promise<string[]> {
+  const res = await fetch(
+    `/api/wilayah-proxy/cities/${encodeURIComponent(provinceCode)}`
   );
+  if (!res.ok) throw new Error('Gagal mengambil data kota');
+  return res.json();
 }
 
-// ✅ Ambil semua kelurahan berdasarkan provinsi, kota, kecamatan
+// Get daftar kecamatan dari provinsi dan kota
+export async function getDistricts(
+  provinceCode: string,
+  cityName: string
+): Promise<string[]> {
+  const res = await fetch(
+    `/api/wilayah-proxy/districts/${encodeURIComponent(provinceCode)}/${encodeURIComponent(cityName)}`
+  );
+  if (!res.ok) throw new Error('Gagal mengambil data kecamatan');
+  return res.json();
+}
+
+// Get daftar kelurahan dari provinsi, kota, dan kecamatan
 export async function getVillages(
   provinceCode: string,
   cityName: string,
   districtName: string
-) {
-  return fetchWithApiKey(
-    `/api/wilayah/villages/${encodeURIComponent(provinceCode)}/${encodeURIComponent(cityName)}/${encodeURIComponent(districtName)}`
+): Promise<Village[]> {
+  const res = await fetch(
+    `/api/wilayah-proxy/villages/${encodeURIComponent(provinceCode)}/${encodeURIComponent(cityName)}/${encodeURIComponent(districtName)}`
   );
+  if (!res.ok) throw new Error('Gagal mengambil data kelurahan');
+  return res.json();
 }
 
-// ✅ Ambil kode pos berdasarkan lokasi lengkap
+// Get kode pos dari provinsi, kota, kecamatan, kelurahan
 export async function getPostalCode(
   provinceCode: string,
   cityName: string,
   districtName: string,
   villageName: string
-) {
-  try {
-    const res = await fetch(
-      `/api/wilayah/postal-code/${encodeURIComponent(provinceCode)}/${encodeURIComponent(cityName)}/${encodeURIComponent(districtName)}/${encodeURIComponent(villageName)}`,
-      {
-        headers: {
-          'x-api-key': API_KEY,
-        },
-      }
-    );
-
-    if (res.status === 404) return "";
-    if (!res.ok) throw new Error(`Gagal fetch kodepos: ${res.status}`);
-
-    const data = await res.json();
-    return data.kodepos || "";
-  } catch (err) {
-    throw err;
-  }
+): Promise<string> {
+  const res = await fetch(
+    `/api/wilayah-proxy/postal-code/${encodeURIComponent(provinceCode)}/${encodeURIComponent(cityName)}/${encodeURIComponent(districtName)}/${encodeURIComponent(villageName)}`
+  );
+  if (!res.ok) throw new Error('Gagal mengambil kode pos');
+  const json = await res.json();
+  return json.kodepos;
 }

@@ -1,14 +1,22 @@
-import wilayah from '@/data/nestedWilayah.json';
 import { NextResponse } from 'next/server';
+import nestedWilayah from '@/data/nestedWilayah.json';
+import { verifyApiKey } from '@/lib/verifyApiKey';
 
 export async function GET(_, { params }) {
-  const { provinceCode } = params;
-  const province = wilayah[provinceCode];
+  const apiKey = _.headers.get('x-api-key');
 
-  if (!province) {
+  // Validasi API Key
+  if (!verifyApiKey(apiKey)) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { provinceCode } = params;
+
+  const prov = nestedWilayah[provinceCode];
+  if (!prov) {
     return NextResponse.json({ message: 'Provinsi tidak ditemukan' }, { status: 404 });
   }
 
-  const cities = Object.keys(province.cities);
-  return NextResponse.json(cities);
+  const cityList = Object.keys(prov.cities);
+  return NextResponse.json(cityList);
 }

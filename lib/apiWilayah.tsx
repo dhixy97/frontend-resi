@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
 
-const API_KEY = process.env.API_KEY || "1234567890abcdef"; // pastikan diset di .env
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "1234567890abcdef"; // pastikan diset di .env
 
 const axiosWithKey = axios.create({
   headers: {

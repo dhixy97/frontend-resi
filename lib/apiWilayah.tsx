@@ -1,33 +1,34 @@
-import axios, { AxiosError } from "axios";
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY || '1234567890abcdef';
 
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "1234567890abcdef"; // pastikan diset di .env
+async function fetchWithApiKey(url: string) {
+  const res = await fetch(url, {
+    headers: {
+      'x-api-key': API_KEY,
+    },
+  });
 
-const axiosWithKey = axios.create({
-  headers: {
-    'x-api-key': API_KEY,
-  },
-});
+  if (!res.ok) {
+    throw new Error(`Gagal fetch ${url}: ${res.status}`);
+  }
+
+  return res.json();
+}
 
 // ✅ Ambil semua provinsi
 export async function getProvinces() {
-  const res = await axiosWithKey.get(`/api/wilayah/provinces`);
-  return res.data;
+  return fetchWithApiKey('/api/wilayah/provinces');
 }
 
 // ✅ Ambil semua kota berdasarkan kode provinsi
 export async function getCities(provinceCode: string) {
-  const res = await axiosWithKey.get(
-    `/api/wilayah/cities/${encodeURIComponent(provinceCode)}`
-  );
-  return res.data;
+  return fetchWithApiKey(`/api/wilayah/cities/${encodeURIComponent(provinceCode)}`);
 }
 
 // ✅ Ambil semua kecamatan berdasarkan provinsi dan kota
 export async function getDistricts(provinceCode: string, cityName: string) {
-  const res = await axiosWithKey.get(
+  return fetchWithApiKey(
     `/api/wilayah/districts/${encodeURIComponent(provinceCode)}/${encodeURIComponent(cityName)}`
   );
-  return res.data;
 }
 
 // ✅ Ambil semua kelurahan berdasarkan provinsi, kota, kecamatan
@@ -36,10 +37,9 @@ export async function getVillages(
   cityName: string,
   districtName: string
 ) {
-  const res = await axiosWithKey.get(
+  return fetchWithApiKey(
     `/api/wilayah/villages/${encodeURIComponent(provinceCode)}/${encodeURIComponent(cityName)}/${encodeURIComponent(districtName)}`
   );
-  return res.data;
 }
 
 // ✅ Ambil kode pos berdasarkan lokasi lengkap
@@ -50,14 +50,21 @@ export async function getPostalCode(
   villageName: string
 ) {
   try {
-    const res = await axiosWithKey.get(
-      `/api/wilayah/postal-code/${encodeURIComponent(provinceCode)}/${encodeURIComponent(cityName)}/${encodeURIComponent(districtName)}/${encodeURIComponent(villageName)}`
+    const res = await fetch(
+      `/api/wilayah/postal-code/${encodeURIComponent(provinceCode)}/${encodeURIComponent(cityName)}/${encodeURIComponent(districtName)}/${encodeURIComponent(villageName)}`,
+      {
+        headers: {
+          'x-api-key': API_KEY,
+        },
+      }
     );
-    return res.data.kodepos || "";
+
+    if (res.status === 404) return "";
+    if (!res.ok) throw new Error(`Gagal fetch kodepos: ${res.status}`);
+
+    const data = await res.json();
+    return data.kodepos || "";
   } catch (err) {
-    if (err instanceof AxiosError && err.response?.status === 404) {
-      return ""; // Tidak ketemu = anggap kosong
-    }
-    throw err; // Error lain tetap dilempar
+    throw err;
   }
 }

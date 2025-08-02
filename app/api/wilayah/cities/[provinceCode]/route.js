@@ -1,8 +1,8 @@
 import wilayah from '@/data/nestedWilayah.json';
 import { NextResponse } from 'next/server';
 
-export async function GET(_, { params }) {
-  const { provinceCode } = params;
+export async function GET(request, context) {
+  const { provinceCode } = context.params;
   const province = wilayah[provinceCode];
 
   if (!province) {

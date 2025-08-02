@@ -2,27 +2,31 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function Navbar() {
-  // Tarik langsung "tarif" sebagai default aktif
-  const [activeSection, setActiveSection] = useState('tarif');
+  const [activeSection, setActiveSection] = useState('home');
 
   useEffect(() => {
     const handleScroll = () => {
       const sections = document.querySelectorAll('section');
-      let current = '';
+      let current = 'home'; // default
+
+      const scrollY = window.scrollY + 150;
+
       sections.forEach((section) => {
-        const sectionTop = section.offsetTop;
-        if (window.scrollY >= sectionTop - 100) {
-          const id = section.getAttribute('id');
-          if (id) current = id;
+        const top = section.offsetTop;
+        const height = section.offsetHeight;
+        const id = section.getAttribute('id');
+        if (id && scrollY >= top && scrollY < top + height) {
+          current = id;
         }
       });
 
-      // Update jika current ditemukan
-      if (current) setActiveSection(current);
+      setActiveSection(current);
     };
 
+    handleScroll(); // jalankan sekali saat mount
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -36,24 +40,30 @@ export default function Navbar() {
     { id: 'costumer', label: 'Our Costumer' },
   ];
 
+  const handleClick = (id: string) => {
+    if (id === 'home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      const section = document.getElementById(id);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   return (
     <nav className="hidden md:flex fixed top-0 w-full z-50 bg-white shadow-md px-8 py-4 justify-between items-center">
       {/* Logo */}
-      <div className="flex items-center gap-2">
-        <Image
-          src="https://www.dakotacargo.co.id/images/main-logo.png"
-          alt="Logo Dakota"
-          width={200}
-          height={100}
-        />
-      </div>
+      <Link href="/" className="flex items-center gap-2">
+        <Image src="/main-logo.webp" alt="Logo Dakota" width={200} height={100} />
+      </Link>
 
       {/* Menu */}
       <ul className="flex gap-4">
         {navItems.map((item) => (
           <li key={item.id}>
-            <a
-              href={`/${item.id}`}
+            <button
+              onClick={() => handleClick(item.id)}
               className={`text-sm font-medium px-4 py-2 rounded transition-all duration-300 ${
                 activeSection === item.id
                   ? 'bg-red-700 text-white'
@@ -61,7 +71,7 @@ export default function Navbar() {
               }`}
             >
               {item.label}
-            </a>
+            </button>
           </li>
         ))}
       </ul>

@@ -12,29 +12,24 @@ import {
 
 export default function CekTarif() {
   const [provinsi, setProvinsi] = useState<Province[]>([]);
-  const [selectedProvinsi, setSelectedProvinsi] = useState("");
+  const [selectedKirimDari, setSelectedKirimDari] = useState(""); // Tambahan
 
+  const [selectedProvinsi, setSelectedProvinsi] = useState("");
   const [kota, setKota] = useState<string[]>([]);
   const [selectedKota, setSelectedKota] = useState("");
-
   const [kecamatan, setKecamatan] = useState<string[]>([]);
   const [selectedKecamatan, setSelectedKecamatan] = useState("");
-
   const [kelurahan, setKelurahan] = useState<Village[]>([]);
   const [selectedKelurahan, setSelectedKelurahan] = useState("");
-
   const [kodePos, setKodePos] = useState("");
 
-  // Ambil semua provinsi
   useEffect(() => {
     getProvinces().then(setProvinsi).catch(console.error);
   }, []);
 
-  // Saat Provinsi berubah
   useEffect(() => {
     if (!selectedProvinsi) return;
 
-    // Reset level bawah
     setSelectedKota("");
     setKota([]);
     setSelectedKecamatan("");
@@ -55,11 +50,9 @@ export default function CekTarif() {
     };
   }, [selectedProvinsi]);
 
-  // Saat Kota berubah
   useEffect(() => {
     if (!selectedKota) return;
 
-    // Reset level bawah
     setSelectedKecamatan("");
     setKecamatan([]);
     setSelectedKelurahan("");
@@ -78,7 +71,6 @@ export default function CekTarif() {
     };
   }, [selectedKota]);
 
-  // Saat Kecamatan berubah
   useEffect(() => {
     if (!selectedKecamatan) return;
 
@@ -98,7 +90,6 @@ export default function CekTarif() {
     };
   }, [selectedKecamatan]);
 
-  // Ambil kode pos saat kelurahan dipilih
   useEffect(() => {
     const isAllSelected =
       selectedProvinsi &&
@@ -140,6 +131,7 @@ export default function CekTarif() {
   }, [selectedKelurahan]);
 
   const resetForm = () => {
+    setSelectedKirimDari(""); // reset juga "KIRIM DARI"
     setSelectedProvinsi("");
     setSelectedKota("");
     setSelectedKecamatan("");
@@ -151,10 +143,27 @@ export default function CekTarif() {
   };
 
   return (
-    <div className="mt-12 bg-white text-black rounded shadow p-6 max-w-5xl mx-auto">
+    <div className="mt-12 bg-white text-black rounded shadow p-6 max-w-5xl mx-auto" id="tarif">
       <h3 className="text-2xl font-semibold text-center mb-6">
         CEK TARIF DAKOTA
       </h3>
+
+      {/* KIRIM DARI */}
+      <div className="mb-6">
+        <label className="block font-semibold mb-2">KIRIM DARI:</label>
+        <select
+          value={selectedKirimDari}
+          onChange={(e) => setSelectedKirimDari(e.target.value)}
+          className="border border-gray-300 px-3 py-2 rounded appearance-none w-full md:w-1/2"
+        >
+          <option value="">Pilih Provinsi</option>
+          {provinsi.map((prov) => (
+            <option key={prov.code} value={prov.code}>
+              {prov.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {/* TUJUAN KIRIM */}
       <div className="mb-4">

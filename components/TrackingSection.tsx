@@ -43,7 +43,7 @@ export default function TrackingSection() {
   };
 
   return (
-    <section className="w-full pt-20 bg-blue-900 text-white" id="tarif">
+    <section className="w-full pt-20 bg-blue-900 text-white" id="home">
       {/* Form Pelacakan */}
       <div className="max-w-5xl mx-auto bg-[#a00c00] text-white py-10 rounded shadow-lg overflow-hidden">
         <div className="px-4">
@@ -91,9 +91,9 @@ export default function TrackingSection() {
       </div>
 
       {/* Komponen Cek Tarif */}
-      <div className="max-w-5xl mx-auto bg-white rounded shadow-lg overflow-hidden pb-30">
+      <section id="tarif" className="max-w-5xl mx-auto bg-white rounded shadow-lg overflow-hidden pb-30">
         <CekTarif />
-      </div>
+      </section>
     </section>
   );
 }

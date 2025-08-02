@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getUserFromRequest } from '@/lib/auth/getUserFromRequest';
+import { getUserFromRequest } from '@/utils/getUserFromRequest';
 import dbConnect from '@/lib/dbConnect';
 import Resi from '@/models/Resi';
 import { toUpperSafe } from '@/utils/toUpperSafe';

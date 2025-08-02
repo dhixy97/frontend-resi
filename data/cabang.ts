@@ -5,7 +5,7 @@ export interface Cabang {
   telepon: string;
 }
 
-export const cabangList: Cabang[] = [
+ const cabangList: Cabang[] = [
   {
     kota: "TANGSEL",
     nama: "TANGSEL AGEN",
@@ -31,3 +31,5 @@ export const cabangList: Cabang[] = [
     telepon: "0852-4016-9659",
   },
 ];
+
+export default cabangList

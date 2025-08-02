@@ -5,7 +5,6 @@ import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import ResiLabel from "@/components/Resilabel";
 import Footer from "@/components/Footer";
-import axios from "axios";
 
 interface PosisiItem {
   tanggal: string;
@@ -41,8 +40,6 @@ interface ResiData {
   posisiBarang: PosisiItem[];
 }
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
 function formatTanggal(tanggalStr: string): string {
   const d = new Date(tanggalStr);
   const bulan = String(d.getMonth() + 1).padStart(2, "0");
@@ -60,16 +57,18 @@ export default function ResiClient() {
   const nomorResi = searchParams.get("resi") || searchParams.get("nomor") || "";
 
   const [dataResi, setDataResi] = useState<ResiData | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!nomorResi) return;
 
     const fetchResi = async () => {
       try {
-        const res = await axios.get<ResiData>(`/api/resi/${nomorResi}`);
-        setDataResi(res.data);
+        const res = await fetch(`/api/resi/${encodeURIComponent(nomorResi)}`);
+        if (!res.ok) throw new Error("Resi tidak ditemukan");
+        const data: ResiData = await res.json();
+        setDataResi(data);
       } catch (err) {
         console.error(err);
         setError("Nomor resi tidak ditemukan.");
@@ -87,18 +86,14 @@ export default function ResiClient() {
     return `${alamat}, ${wilayah.provinsi}, ${wilayah.kota}, ${wilayah.kecamatan}, ${wilayah.kelurahan}, ${wilayah.kodepos}`;
   };
 
-  const formatStatus = (status : string) => {
-  switch (status) {
-    case 'Pending':
-      return 'Pending';
-    case 'Proses':
-      return 'Sedang Diproses';
-    case 'Diterima':
-      return 'Barang Diterima';
-    default:
-      return status;
-  }
-};
+  const formatStatus = (status: string) => {
+    switch (status) {
+      case 'Pending': return 'Pending';
+      case 'Proses': return 'Sedang Diproses';
+      case 'Diterima': return 'Barang Diterima';
+      default: return status;
+    }
+  };
 
   return (
     <>
@@ -113,9 +108,7 @@ export default function ResiClient() {
 
           <div className="px-4 py-6 text-center">
             <p className="text-md mb-2">Terima kasih telah menggunakan jasa layanan kami, berikut adalah informasi perjalanan dan posisi terakhir paket kiriman anda</p>
-            <p className="text-md mb-4">
-              PAKET KIRIMAN DENGAN NOMOR [ <strong>{nomorResi}</strong> ]
-            </p>
+            <p className="text-md mb-4">PAKET KIRIMAN DENGAN NOMOR [ <strong>{nomorResi}</strong> ]</p>
 
             {loading ? (
               <p className="text-sm text-gray-600 mb-6">Memuat data...</p>
@@ -164,7 +157,10 @@ export default function ResiClient() {
               </>
             )}
 
-            <button onClick={() => router.push("/")} className="mt-8 px-6 py-2 border border-gray-400 rounded hover:bg-gray-100 transition">
+            <button
+              onClick={() => router.push("/")}
+              className="mt-8 px-6 py-2 border border-gray-400 rounded hover:bg-gray-100 transition"
+            >
               Kembali
             </button>
           </div>

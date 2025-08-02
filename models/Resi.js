@@ -1,36 +1,39 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, Document, models, model } from 'mongoose';
 
-const posisiSchema = new mongoose.Schema({
-  tanggal: { type: Date, default: Date.now },
-  status: String,
-  keterangan: String,
-});
+const posisiSchema = new Schema(
+  {
+    tanggal: { type: Date, default: Date.now },
+    status: { type: String, required: true },
+    keterangan: { type: String, required: true },
+  },
+  { _id: false }
+);
 
-const resiSchema = new mongoose.Schema({
-  resi: { type: String, unique: true, required: true },
+const resiSchema = new Schema({
+  resi: { type: String, unique: true, required: true, trim: true },
 
   cabang: {
-    nama: String,
-    noTelp: String,
-    alamat: String,
+    nama: { type: String, required: true },
+    noTelp: { type: String, required: true },
+    alamat: { type: String, required: true },
   },
 
-  nama: String,
-  alamat: String,
-  namaBarang: String,
+  nama: { type: String, required: true },
+  alamat: { type: String, required: true },
+  namaBarang: { type: String, required: true },
 
   wilayah: {
-    provinsi: String,
-    kota: String,
-    kecamatan: String,
-    kelurahan: String,
-    kodepos: String,
+    provinsi: { type: String, required: true },
+    kota: { type: String, required: true },
+    kecamatan: { type: String, required: true },
+    kelurahan: { type: String, required: true },
+    kodepos: { type: String, required: true },
   },
 
-  jumlah: Number,
-  berat: Number,
-  jenis: String,
-  status: String,
+  jumlah: { type: Number, required: true },
+  berat: { type: Number, required: true },
+  jenis: { type: String, required: true },
+  status: { type: String, default: 'Pending' },
 
   posisiBarang: [posisiSchema],
 
@@ -40,5 +43,5 @@ const resiSchema = new mongoose.Schema({
   },
 });
 
-// 👇 Hindari duplikat model saat hot reload
-export default mongoose.models.Resi || mongoose.model('Resi', resiSchema);
+// 👇 Hindari duplikat model saat hot reload di Next.js
+export default models.Resi || model('Resi', resiSchema);

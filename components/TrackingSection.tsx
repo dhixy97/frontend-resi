@@ -15,9 +15,9 @@ const bannerImages = [
 
 export default function TrackingSection() {
   const router = useRouter();
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [fade, setFade] = useState(true);
-
   const [resi, setResi] = useState('');
   const [error, setError] = useState('');
 
@@ -39,8 +39,7 @@ export default function TrackingSection() {
       return;
     }
 
-    // Arahkan ke halaman cek resi dengan query ?resi=
-    router.push(`/cek-resi?resi=${resi.trim()}`);
+    router.push(`/cek-resi?resi=${encodeURIComponent(resi.trim())}`);
   };
 
   return (
@@ -79,11 +78,11 @@ export default function TrackingSection() {
       </div>
 
       {/* Banner Slide */}
-      <div className="max-w-5xl mx-auto bg-white text-white rounded shadow-lg overflow-hidden">
+      <div className="max-w-5xl mx-auto bg-white rounded shadow-lg overflow-hidden">
         <Image
           key={currentIndex}
           src={bannerImages[currentIndex]}
-          alt="Banner Promo"
+          alt={`Banner ${currentIndex + 1}`}
           width={1000}
           height={400}
           className={`w-full h-auto transition-opacity duration-500 ${fade ? 'opacity-100' : 'opacity-0'}`}
@@ -92,7 +91,7 @@ export default function TrackingSection() {
       </div>
 
       {/* Komponen Cek Tarif */}
-      <div className="max-w-5xl mx-auto bg-white text-white rounded shadow-lg overflow-hidden pb-30">
+      <div className="max-w-5xl mx-auto bg-white rounded shadow-lg overflow-hidden pb-30">
         <CekTarif />
       </div>
     </section>

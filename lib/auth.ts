@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
 
-const SECRET = process.env.JWT_SECRET || "secret123";
+const SECRET = process.env.JWT_SECRET || "PGVU2QNPHMK8BZNAMM4DSL49AU5J39YL";
 
 export interface AuthPayload {
   id: string;

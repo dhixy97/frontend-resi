@@ -15,34 +15,33 @@ interface Provinsi {
 
 interface Kelurahan {
   name: string;
-  postalCode: string;
+  kodepos: string;
 }
 
 export default function CekTarif() {
   const [provinsi, setProvinsi] = useState<Provinsi[]>([]);
-  const [selectedProvinsi, setSelectedProvinsi] = useState("");
+  const [selectedProvinsi, setSelectedProvinsi] = useState<string>("");
 
   const [kota, setKota] = useState<string[]>([]);
-  const [selectedKota, setSelectedKota] = useState("");
+  const [selectedKota, setSelectedKota] = useState<string>("");
 
   const [kecamatan, setKecamatan] = useState<string[]>([]);
-  const [selectedKecamatan, setSelectedKecamatan] = useState("");
+  const [selectedKecamatan, setSelectedKecamatan] = useState<string>("");
 
   const [kelurahan, setKelurahan] = useState<Kelurahan[]>([]);
-  const [selectedKelurahan, setSelectedKelurahan] = useState("");
+  const [selectedKelurahan, setSelectedKelurahan] = useState<string>("");
 
-  const [kodePos, setKodePos] = useState("");
+  const [kodePos, setKodePos] = useState<string>("");
 
-  // Ambil semua provinsi saat pertama render
   useEffect(() => {
-    getProvinces().then(setProvinsi).catch(console.error);
+    getProvinces()
+      .then((data: Provinsi[]) => setProvinsi(data))
+      .catch(console.error);
   }, []);
 
-  // Saat Provinsi berubah
   useEffect(() => {
     if (!selectedProvinsi) return;
 
-    // Reset child
     setSelectedKota("");
     setKota([]);
     setSelectedKecamatan("");
@@ -51,15 +50,14 @@ export default function CekTarif() {
     setKelurahan([]);
     setKodePos("");
 
-    // Ambil data kota
-    getCities(selectedProvinsi).then(setKota).catch(console.error);
+    getCities(selectedProvinsi)
+      .then((data: string[]) => setKota(data))
+      .catch(console.error);
   }, [selectedProvinsi]);
 
-  // Saat Kota berubah
   useEffect(() => {
     if (!selectedKota) return;
 
-    // Reset child
     setSelectedKecamatan("");
     setKecamatan([]);
     setSelectedKelurahan("");
@@ -67,33 +65,30 @@ export default function CekTarif() {
     setKodePos("");
 
     getDistricts(selectedProvinsi, selectedKota)
-      .then(setKecamatan)
+      .then((data: string[]) => setKecamatan(data))
       .catch(console.error);
   }, [selectedKota]);
 
-  // Saat Kecamatan berubah
   useEffect(() => {
     if (!selectedKecamatan) return;
 
-    // Reset child
     setSelectedKelurahan("");
     setKelurahan([]);
     setKodePos("");
 
     getVillages(selectedProvinsi, selectedKota, selectedKecamatan)
-      .then(setKelurahan)
+      .then((data: Kelurahan[]) => setKelurahan(data))
       .catch(console.error);
   }, [selectedKecamatan]);
 
-  // Ambil kode pos saat kelurahan dipilih
   useEffect(() => {
-    const isAllSelected =
+    const isComplete =
       selectedProvinsi &&
       selectedKota &&
       selectedKecamatan &&
       selectedKelurahan;
 
-    if (!isAllSelected) return;
+    if (!isComplete) return;
 
     let canceled = false;
 
@@ -103,18 +98,18 @@ export default function CekTarif() {
       selectedKecamatan,
       selectedKelurahan
     )
-      .then((res) => {
+      .then((res: { kodepos?: string } | string) => {
         if (canceled) return;
 
-        if (typeof res === "object" && res.postalCode) {
-          setKodePos(res.postalCode);
+        if (typeof res === "object" && "kodepos" in res && res.kodepos) {
+          setKodePos(res.kodepos);
         } else if (typeof res === "string") {
           setKodePos(res);
         } else {
           setKodePos("");
         }
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         if (!canceled) {
           console.error("Gagal ambil kode pos:", err);
           setKodePos("");
@@ -124,9 +119,9 @@ export default function CekTarif() {
     return () => {
       canceled = true;
     };
-  }, [selectedProvinsi, selectedKota, selectedKecamatan, selectedKelurahan]);
+  }, [selectedKelurahan]);
 
-  const resetForm = () => {
+  const resetForm = (): void => {
     setSelectedProvinsi("");
     setSelectedKota("");
     setSelectedKecamatan("");
@@ -144,7 +139,10 @@ export default function CekTarif() {
       {/* KIRIM DARI (dummy) */}
       <div className="mb-4">
         <label className="block font-semibold mb-1">KIRIM DARI:</label>
-        <select className="w-full border border-gray-300 rounded px-3 py-2 appearance-none" defaultValue="">
+        <select
+          className="w-full border border-gray-300 rounded px-3 py-2"
+          defaultValue=""
+        >
           <option value="">Pilih Provinsi</option>
           {provinsi.map((prov) => (
             <option key={prov.code} value={prov.code}>
@@ -158,11 +156,10 @@ export default function CekTarif() {
       <div className="mb-4">
         <label className="block font-semibold mb-2">TUJUAN KIRIM:</label>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-2">
-          {/* Provinsi */}
           <select
             value={selectedProvinsi}
             onChange={(e) => setSelectedProvinsi(e.target.value)}
-            className="border border-gray-300 px-3 py-2 rounded appearance-none"
+            className="border border-gray-300 px-3 py-2 rounded"
           >
             <option value="">Provinsi</option>
             {provinsi.map((prov) => (
@@ -172,63 +169,58 @@ export default function CekTarif() {
             ))}
           </select>
 
-          {/* Kota */}
           <select
             value={selectedKota}
             onChange={(e) => setSelectedKota(e.target.value)}
             disabled={!kota.length}
-            className="border border-gray-300 px-3 py-2 rounded appearance-none"
+            className="border border-gray-300 px-3 py-2 rounded"
           >
             <option value="">Kota</option>
-            {kota.map((k) => (
-              <option key={k} value={k}>
-                {k}
+            {kota.map((kota) => (
+              <option key={kota} value={kota}>
+                {kota}
               </option>
             ))}
           </select>
 
-          {/* Kecamatan */}
           <select
             value={selectedKecamatan}
             onChange={(e) => setSelectedKecamatan(e.target.value)}
             disabled={!kecamatan.length}
-            className="border border-gray-300 px-3 py-2 rounded appearance-none"
+            className="border border-gray-300 px-3 py-2 rounded"
           >
             <option value="">Kecamatan</option>
-            {kecamatan.map((d) => (
-              <option key={d} value={d}>
-                {d}
+            {kecamatan.map((kec) => (
+              <option key={kec} value={kec}>
+                {kec}
               </option>
             ))}
           </select>
 
-          {/* Kelurahan */}
           <select
             value={selectedKelurahan}
             onChange={(e) => setSelectedKelurahan(e.target.value)}
             disabled={!kelurahan.length}
-            className="border border-gray-300 px-3 py-2 rounded appearance-none"
+            className="border border-gray-300 px-3 py-2 rounded"
           >
             <option value="">Kelurahan</option>
-            {kelurahan.map((v) => (
-              <option key={v.name} value={v.name}>
-                {v.name}
+            {kelurahan.map((kel) => (
+              <option key={kel.name} value={kel.name}>
+                {kel.name}
               </option>
             ))}
           </select>
 
-          {/* Kode Pos */}
           <input
             type="text"
             placeholder="Kode Pos"
-            className="border border-gray-300 px-3 py-2 rounded appearance-none"
+            className="border border-gray-300 px-3 py-2 rounded"
             value={kodePos}
             readOnly
           />
         </div>
       </div>
 
-      {/* Tombol */}
       <div className="flex flex-col md:flex-row justify-center gap-4 mt-6">
         <button className="px-6 py-2 bg-red-700 hover:bg-red-600 text-white rounded">
           CEK TARIF

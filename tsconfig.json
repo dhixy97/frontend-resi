@@ -35,7 +35,7 @@
     "next-env.d.ts" // ✅ Tambahkan jika belum
     ,
     ".next/types/**/*.ts"
-  ],
+, "app/api/wilayah-proxy/route.js"  ],
   "exclude": [
     "node_modules",
     ".next"

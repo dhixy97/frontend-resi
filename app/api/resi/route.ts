@@ -20,7 +20,9 @@ export async function GET(req: NextRequest) {
     await dbConnect();
 
     const user = verifyToken(req);
-    if (!user || user.role !== 'admin') {
+    const allowedRoles = ['admin', 'user'];
+
+    if (!user || !allowedRoles.includes(user.role)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -34,6 +36,7 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
 
 // =======================
 // 🔐 Proteksi di POST

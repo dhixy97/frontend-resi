@@ -1,5 +1,14 @@
 import mongoose, { Schema, Document, models, model } from 'mongoose';
 
+const cabangSchema = new Schema(
+  {
+    nama: { type: String, required: true },
+    telepon: { type: String, required: true },
+    alamat: { type: String, required: true },
+  },
+  { _id: false }
+);
+
 const posisiSchema = new Schema(
   {
     tanggal: { type: Date, default: Date.now },
@@ -13,9 +22,8 @@ const resiSchema = new Schema({
   resi: { type: String, unique: true, required: true, trim: true },
 
   cabang: {
-    nama: { type: String, required: true },
-    telepon: { type: String, required: true },
-    alamat: { type: String, required: true },
+    type: cabangSchema,
+    required: true,
   },
 
   nama: { type: String, required: true },
@@ -43,5 +51,4 @@ const resiSchema = new Schema({
   },
 });
 
-// 👇 Hindari duplikat model saat hot reload di Next.js
 export default models.Resi || model('Resi', resiSchema);

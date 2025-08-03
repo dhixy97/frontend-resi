@@ -1,21 +1,14 @@
+// app/api/wilayah-proxy/all/route.ts
 import { NextResponse } from "next/server";
 import wilayah from "@/app/data/nestedWilayah.json";
+import { verifyApiKey } from "@/lib/verifyApiKey";
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const apiKey = searchParams.get("apiKey");
+  const apiKey = req.headers.get("x-api-key");
 
-  // Proteksi API Key
-  const validKey = process.env.API_KEY || "your-default-api-key";
-  if (apiKey !== validKey) {
-    return NextResponse.json(
-      { error: "Unauthorized: Invalid API Key" },
-      { status: 401 }
-    );
+  if (!apiKey || !verifyApiKey(apiKey)) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  // Ambil semua provinsi
-  const provinces = Object.keys(wilayah);
-
-  return NextResponse.json(provinces);
+  return NextResponse.json(wilayah);
 }

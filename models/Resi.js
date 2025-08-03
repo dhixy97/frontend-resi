@@ -14,7 +14,7 @@ const resiSchema = new Schema({
 
   cabang: {
     nama: { type: String, required: true },
-    noTelp: { type: String, required: true },
+    telepon: { type: String, required: true },
     alamat: { type: String, required: true },
   },
 

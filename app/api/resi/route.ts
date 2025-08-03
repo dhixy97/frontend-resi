@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
       status,
     } = body;
 
-    if (!cabang?.nama || !cabang?.noTelp || !cabang?.alamat) {
+    if (!cabang?.nama || !cabang?.telepon|| !cabang?.alamat) {
       return NextResponse.json(
         { error: 'Data cabang tidak lengkap' },
         { status: 400 }

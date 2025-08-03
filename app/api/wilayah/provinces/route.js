@@ -4,7 +4,6 @@ import wilayah from "@/app/data/nestedWilayah.json";
 
 export async function GET(req) {
   const apiKey = req.headers.get("x-api-key");
-  console.log("apinya adalah:", apiKey);
 
   if (!verifyApiKey(apiKey)) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });

@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
       resi: noResi,
       cabang: {
         nama: toUpperSafe(cabang.nama),
-        noTelp: toUpperSafe(cabang.noTelp),
+        telepon: toUpperSafe(cabang.telepon),
         alamat: toUpperSafe(cabang.alamat),
       },
       nama: toUpperSafe(nama),

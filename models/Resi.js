@@ -51,4 +51,9 @@ const resiSchema = new Schema({
   },
 });
 
-export default models.Resi || model('Resi', resiSchema);
+// ⛔ Hapus model lama dari cache (penting untuk development mode)
+if (mongoose.models.Resi) {
+  delete mongoose.models.Resi;
+}
+
+export default mongoose.model('Resi', resiSchema);

@@ -24,7 +24,7 @@ export default function Footer() {
                 <span className="font-semibold">Phone:</span> (021)8224548
               </p>
               <p>
-                <span className="font-semibold">Whatsapp:</span> +6282393450867
+                <span className="font-semibold">Whatsapp:</span> +6282189195668
               </p>
               <p>
                 <span className="font-semibold">Email:</span>{" "}

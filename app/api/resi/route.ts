@@ -9,7 +9,7 @@ function generateNomorResiAngka(): string {
   const now = new Date();
   const random9Digit = Math.floor(100000000 + Math.random() * 900000000);
   const date = `${now.getDate()}${now.getMonth() + 1}${now.getFullYear()}`;
-  return `${random9Digit}${date}`;
+  return `${random9Digit}${date}`;    
 }
 
 // =======================

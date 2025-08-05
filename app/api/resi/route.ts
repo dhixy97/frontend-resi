@@ -95,7 +95,11 @@ export async function POST(req: NextRequest) {
 
     const newResi = new Resi({
       resi: noResi,
-      showroom: toUpperSafe(showroom),
+      showroom: {
+        nama: toUpperSafe(showroom.nama),
+        telepon: toUpperSafe(showroom.telepon),
+        alamat: toUpperSafe(showroom.alamat)
+      },
       cabang: {
         nama: toUpperSafe(cabang.nama),
         telepon: toUpperSafe(cabang.telepon),

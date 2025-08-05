@@ -13,7 +13,7 @@ function generateNomorResiAngka(): string {
 }
 
 // =======================
-// 🔐 Proteksi di GET
+// 🔐 GET /api/resi
 // =======================
 export async function GET(req: NextRequest) {
   try {
@@ -37,9 +37,8 @@ export async function GET(req: NextRequest) {
   }
 }
 
-
 // =======================
-// 🔐 Proteksi di POST
+// 🔐 POST /api/resi
 // =======================
 export async function POST(req: NextRequest) {
   try {
@@ -53,9 +52,11 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const {
+      showroom,
       cabang,
-      nama,
-      alamat,
+      namaPengirim,
+      namaPenerima,
+      alamatPenerima,
       namaBarang,
       wilayah,
       jumlah,
@@ -64,9 +65,28 @@ export async function POST(req: NextRequest) {
       status,
     } = body;
 
-    if (!cabang?.nama || !cabang?.telepon|| !cabang?.alamat) {
+    // Validasi field cabang
+    if (!cabang?.nama || !cabang?.telepon || !cabang?.alamat) {
       return NextResponse.json(
         { error: 'Data cabang tidak lengkap' },
+        { status: 400 }
+      );
+    }
+
+    // Validasi field wajib lainnya
+    if (
+      !showroom ||
+      !namaPengirim ||
+      !namaPenerima ||
+      !alamatPenerima ||
+      !namaBarang ||
+      !wilayah?.provinsi ||
+      !wilayah?.kota ||
+      !wilayah?.kecamatan ||
+      !wilayah?.kelurahan
+    ) {
+      return NextResponse.json(
+        { error: 'Data wajib tidak lengkap' },
         { status: 400 }
       );
     }
@@ -75,23 +95,25 @@ export async function POST(req: NextRequest) {
 
     const newResi = new Resi({
       resi: noResi,
+      showroom: toUpperSafe(showroom),
       cabang: {
         nama: toUpperSafe(cabang.nama),
         telepon: toUpperSafe(cabang.telepon),
         alamat: toUpperSafe(cabang.alamat),
       },
-      nama: toUpperSafe(nama),
-      alamat: toUpperSafe(alamat),
+      namaPengirim: toUpperSafe(namaPengirim),
+      namaPenerima: toUpperSafe(namaPenerima),
+      alamatPenerima: toUpperSafe(alamatPenerima),
       namaBarang: toUpperSafe(namaBarang),
       wilayah: {
-        provinsi: toUpperSafe(wilayah?.provinsi),
-        kota: toUpperSafe(wilayah?.kota),
-        kecamatan: toUpperSafe(wilayah?.kecamatan),
-        kelurahan: toUpperSafe(wilayah?.kelurahan),
+        provinsi: toUpperSafe(wilayah.provinsi),
+        kota: toUpperSafe(wilayah.kota),
+        kecamatan: toUpperSafe(wilayah.kecamatan),
+        kelurahan: toUpperSafe(wilayah.kelurahan),
         kodepos: wilayah?.kodepos || '',
       },
-      jumlah,
-      berat,
+      jumlah: Number(jumlah),
+      berat: Number(berat),
       jenis,
       status: status || 'Pending',
       posisiBarang: [

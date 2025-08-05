@@ -11,11 +11,16 @@ interface PosisiItem {
   keterangan: string;
   status: string;
 }
+interface Showroom {
+  nama: string;
+  alamat: string;
+  telepon: string;
+}
 
 interface Cabang {
   nama: string;
   alamat: string;
-  noTelp: string;
+  telepon: string;
 }
 
 interface Wilayah {
@@ -28,8 +33,9 @@ interface Wilayah {
 
 interface ResiData {
   resi: string;
-  nama: string;
-  alamat: string;
+  namaPengirim: string;
+  namaPenerima: string;
+  alamatPenerima: string;
   wilayah: Wilayah;
   jumlah: number;
   berat: number;
@@ -37,6 +43,7 @@ interface ResiData {
   keterangan: string;
   jenis: string;
   cabang: Cabang;
+  showroom: Showroom;
   posisiBarang: PosisiItem[];
 }
 
@@ -82,8 +89,8 @@ export default function ResiClient() {
 
   const formatAlamatLengkap = (): string => {
     if (!dataResi) return "-";
-    const { alamat, wilayah } = dataResi;
-    return `${alamat}, ${wilayah.provinsi}, ${wilayah.kota}, ${wilayah.kecamatan}, ${wilayah.kelurahan}, ${wilayah.kodepos}`;
+    const { alamatPenerima, wilayah } = dataResi;
+    return `${alamatPenerima}, ${wilayah.provinsi}, ${wilayah.kota}, ${wilayah.kecamatan}, ${wilayah.kelurahan}, ${wilayah.kodepos}`;
   };
 
   const formatStatus = (status: string) => {
@@ -119,17 +126,16 @@ export default function ResiClient() {
                 <div className="text-left mt-4">
                   <ResiLabel
                     nomorResi={dataResi.resi}
-                    pengirim={dataResi.cabang?.nama ?? "-"}
-                    alamatPengirim={dataResi.cabang?.alamat ?? "-"}
-                    penerima={dataResi.nama}
+                    pengirim={`${dataResi.showroom?.nama}(${dataResi.namaPengirim})`}
+                    alamatPengirim={dataResi.showroom?.alamat ?? "-"}
+                    penerima={dataResi.namaPenerima}
                     alamatPenerima={formatAlamatLengkap()}
                     jumlahKoli={dataResi.jumlah}
                     beratAsli={`${dataResi.berat} kg`}
                     isiKiriman={dataResi.namaBarang}
-                    keterangan={dataResi.keterangan}
                     jenisHarga={dataResi.jenis}
                     cabang={dataResi.cabang?.nama ?? "-"}
-                    teleponCabang={dataResi.cabang?.noTelp ?? "-"}
+                    teleponCabang={dataResi.cabang?.telepon ?? "-"}
                     alamatCabang={dataResi.cabang?.alamat ?? "-"}
                   />
                 </div>

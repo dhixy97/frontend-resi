@@ -12,7 +12,6 @@ interface ResiLabelProps {
   jumlahKoli: number;
   beratAsli: string;
   isiKiriman: string;
-  keterangan: string;
   jenisHarga: string;
   cabang: string;
   teleponCabang: string;
@@ -28,7 +27,6 @@ export default function ResiLabel({
   jumlahKoli,
   beratAsli,
   isiKiriman,
-  keterangan,
   jenisHarga,
   cabang,
   teleponCabang,
@@ -50,8 +48,8 @@ export default function ResiLabel({
           <p>
             <strong>DAKOTA BUANA SEMESTA</strong><br />
             {cabang}<br />
-            {teleponCabang}<br />
-            {alamatCabang}
+            {alamatCabang}<br />
+            {teleponCabang}
           </p>
 
           <hr className="my-2" />
@@ -79,7 +77,6 @@ export default function ResiLabel({
 
           <p className="mt-2">
             Isi Kiriman: {isiKiriman}<br />
-            Keterangan: {keterangan}<br />
             Jenis Harga: {jenisHarga}
           </p>
 

@@ -1,5 +1,14 @@
 import mongoose, { Schema, Document, models, model } from 'mongoose';
 
+const showroomSchema = new Schema(
+  {
+    nama: { type: String, required: true },
+    telepon: { type: String, required: true },
+    alamat: { type: String, required: true },
+  },
+  { _id: false }
+);
+
 const cabangSchema = new Schema(
   {
     nama: { type: String, required: true },
@@ -21,13 +30,19 @@ const posisiSchema = new Schema(
 const resiSchema = new Schema({
   resi: { type: String, unique: true, required: true, trim: true },
 
+  showroom: {
+    type: showroomSchema,
+    required: true
+  },
+
   cabang: {
     type: cabangSchema,
     required: true,
   },
 
-  nama: { type: String, required: true },
-  alamat: { type: String, required: true },
+  namaPengirim: {type: String, required: true},
+  namaPenerima: { type: String, required: true },
+  alamatPenerima: { type: String, required: true },
   namaBarang: { type: String, required: true },
 
   wilayah: {

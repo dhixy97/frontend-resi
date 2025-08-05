@@ -7,28 +7,16 @@ export interface Cabang {
 
  const cabangList: Cabang[] = [
   {
-    kota: "TANGSEL",
-    nama: "TANGSEL AGEN",
-    alamat: "Taman Tekno, Blok K3 No. 9, Setu, Tangerang Selatan, SETU. TANGERANG SELATAN",
-    telepon: "021-12345678",
+    kota: "YOGYAKARTA",
+    nama: "YOGYAKARTA CABANG",
+    alamat: "Jl. Sugeng Jeroni No.79, Patangpuluhan, Wirobrajan, Kota Yogyakarta, Daerah Istimewa Yogyakarta 55251",
+    telepon: "0821-89195668",
   },
   {
-    kota: "KEDIRI",
-    nama: "KEDIRI KOTA AGEN",
-    alamat: "Ruko Tosaren, Jl. Kapten Tendean No. 32, Tosaren, Kec. Pesantren, Kota Kediri - Jawa Timur",
-    telepon: "0354-87654321",
-  },
-  {
-    kota: "DENPASAR",
-    nama: "DENPASAR AGEN",
-    alamat: "Jl. Gatot Subroto No. 88, Denpasar, Bali",
-    telepon: "0361-123456",
-  },
-  {
-    kota: "MAKASSAR",
-    nama: "MAKASSAR AGEN",
-    alamat: "Jl. MAKASSAR",
-    telepon: "0852-4016-9659",
+    kota: "PEKANBARU",
+    nama: "PEKANBARU CABANG",
+    alamat: " Jl. Soekarno - Hatta, Sidomulyo Bar., Kec. Marpoyan Damai, Kota Pekanbaru, Riau 28294",
+    telepon: "0821-89195668",
   },
 ];
 

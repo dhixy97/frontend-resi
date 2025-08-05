@@ -37,7 +37,7 @@ export async function PUT(req: NextRequest, context: { params: { noresi: string 
 
     let keterangan = '';
     if (status === 'Diterima') {
-      keterangan = `Barang diterima oleh ${resi.nama}`;
+      keterangan = `Barang diterima oleh ${resi.namaPenerima}`;
     } else {
       keterangan = `Barang Diloper Oleh Petugas : ${kodePetugas}`;
     }
